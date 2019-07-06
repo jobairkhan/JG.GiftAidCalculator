@@ -26,19 +26,7 @@ namespace JG.FinTechTest.Tests.GiftAid
 
             Assert.That(result, Is.EqualTo(0));
         }
-
-        [TestCase(0.0, 0.0)]
-        [TestCase(0.0, 1.0)]
-        [TestCase(0.0, 100.0)]
-        public void Return_zero_when_tax_rate_is_0(decimal taxRate, decimal donationAmount)
-        {
-            _taxRateStorage.CurrentRate.Returns(taxRate);
-
-            var result = _sut.Calculate(donationAmount);
-
-            Assert.That(result, Is.EqualTo(0));
-        }
-
+        
         [Test()]
         public void Get_read_current_tax_rate()
         {
@@ -50,8 +38,11 @@ namespace JG.FinTechTest.Tests.GiftAid
             var unused = _taxRateStorage.Received().CurrentRate;
         }
 
-        [TestCase(20.0, 1.0, 0.25)]
-        [TestCase(1.0, 1.0, 0.01)]
+        [TestCase(0, 0, 0)]
+        [TestCase(0, 1, 0)]
+        [TestCase(0, 100, 0)]
+        [TestCase(20, 1, 0.25)]
+        [TestCase(1, 1, 0.01)]
         public void Return_correct_gift_aid(decimal taxRate, decimal donationAmount, decimal expectedGiftAid)
         {
             _taxRateStorage.CurrentRate.Returns(taxRate);
