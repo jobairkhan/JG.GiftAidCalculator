@@ -27,6 +27,8 @@ namespace JG.FinTechTest.Tests.GiftAid
         }
 
         [TestCase(0.0, 0.0)]
+        [TestCase(0.0, 1.0)]
+        [TestCase(0.0, 100.0)]
         public void Return_zero_when_tax_rate_is_0(decimal taxRate, decimal donationAmount)
         {
             _taxRateStorage.CurrentRate.Returns(taxRate);
@@ -34,6 +36,16 @@ namespace JG.FinTechTest.Tests.GiftAid
             var result = _sut.Calculate(donationAmount);
 
             Assert.That(result, Is.EqualTo(0));
+        }
+
+        [TestCase(20.0, 1.0, 0.25)]
+        public void Return_correct_gift_aid(decimal taxRate, decimal donationAmount, decimal expectedGiftAid)
+        {
+            _taxRateStorage.CurrentRate.Returns(taxRate);
+
+            var result = _sut.Calculate(donationAmount);
+
+            Assert.That(result, Is.EqualTo(expectedGiftAid));
         }
     }
 
