@@ -1,21 +1,27 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework.Constraints;
+using NSubstitute;
 
 namespace JG.FinTechTest.Tests.GiftAid
 {
     [TestFixture]
     public class GiftAidCalculatorShould
     {
+        GiftAidCalculator _sut;
+        private IStoreTaxRate _taxRateStorage;
+
+        [SetUp]
+        public void Setup()
+        {
+            _taxRateStorage = Substitute.For<IStoreTaxRate>();
+            _sut = new GiftAidCalculator(_taxRateStorage);
+        }
+
         [Test]
         public void Return_zero_when_donation_amount_is_0()
         {
             const decimal donationAmount = 0.0M;
-            var sut = new GiftAidCalculator(0);
 
-            var result = sut.Calculate(donationAmount);
+            var result = _sut.Calculate(donationAmount);
 
             Assert.That(result, Is.EqualTo(0));
         }
@@ -25,19 +31,26 @@ namespace JG.FinTechTest.Tests.GiftAid
         {
             const decimal taxRate = 0.0M;
             const decimal donationAmount = 0.0M;
-            var sut = new GiftAidCalculator(taxRate);
+            _taxRateStorage.CurrentRate.Returns(taxRate);
 
-            var result = sut.Calculate(donationAmount);
+            var result = _sut.Calculate(donationAmount);
 
             Assert.That(result, Is.EqualTo(0));
         }
     }
 
+    public interface IStoreTaxRate
+    {
+        decimal CurrentRate { get; }
+    }
+
     public class GiftAidCalculator
     {
-        public GiftAidCalculator(decimal taxRate)
+        private readonly IStoreTaxRate _taxRateStorage;
+
+        public GiftAidCalculator(IStoreTaxRate taxRateStorage)
         {
-            
+            _taxRateStorage = taxRateStorage;
         }
 
         public decimal Calculate(decimal donationAmount)
