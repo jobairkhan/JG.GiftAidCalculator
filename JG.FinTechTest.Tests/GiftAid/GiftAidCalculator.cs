@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using NSubstitute;
 
 namespace JG.FinTechTest.Tests.GiftAid
@@ -50,6 +51,7 @@ namespace JG.FinTechTest.Tests.GiftAid
         }
 
         [TestCase(20.0, 1.0, 0.25)]
+        [TestCase(1.0, 1.0, 0.01)]
         public void Return_correct_gift_aid(decimal taxRate, decimal donationAmount, decimal expectedGiftAid)
         {
             _taxRateStorage.CurrentRate.Returns(taxRate);
@@ -77,7 +79,7 @@ namespace JG.FinTechTest.Tests.GiftAid
         public decimal Calculate(decimal donationAmount)
         {
             var taxRate = _taxRateStorage.CurrentRate;
-            return donationAmount * (taxRate / (100 - taxRate));
+            return Math.Round(donationAmount * (taxRate / (100 - taxRate)), 2);
         }
     }
 }
