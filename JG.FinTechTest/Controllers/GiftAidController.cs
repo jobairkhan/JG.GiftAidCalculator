@@ -6,7 +6,10 @@ namespace JG.FinTechTest.Controllers
     [ApiController]
     public class GiftAidController : ControllerBase
     {
-
+        /// <summary>
+        /// Ping
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Test()
         {
