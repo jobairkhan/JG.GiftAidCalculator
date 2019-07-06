@@ -38,15 +38,26 @@ namespace JG.FinTechTest.Tests.GiftAid
             Assert.That(result, Is.EqualTo(0));
         }
 
-        [TestCase(20.0, 1.0, 0.25)]
-        public void Return_correct_gift_aid(decimal taxRate, decimal donationAmount, decimal expectedGiftAid)
+        [Test()]
+        public void Get_read_current_tax_rate()
         {
-            _taxRateStorage.CurrentRate.Returns(taxRate);
+            var returnThisTaxRate = 1;
+            _taxRateStorage.CurrentRate.Returns(returnThisTaxRate);
 
-            var result = _sut.Calculate(donationAmount);
+            _sut.Calculate(1);
 
-            Assert.That(result, Is.EqualTo(expectedGiftAid));
+            var unused = _taxRateStorage.Received().CurrentRate;
         }
+
+        //[TestCase(20.0, 1.0, 0.25)]
+        //public void Return_correct_gift_aid(decimal taxRate, decimal donationAmount, decimal expectedGiftAid)
+        //{
+        //    _taxRateStorage.CurrentRate.Returns(taxRate);
+
+        //    var result = _sut.Calculate(donationAmount);
+
+        //    Assert.That(result, Is.EqualTo(expectedGiftAid));
+        //}
     }
 
     public interface IStoreTaxRate
@@ -65,6 +76,7 @@ namespace JG.FinTechTest.Tests.GiftAid
 
         public decimal Calculate(decimal donationAmount)
         {
+            var taxRate = _taxRateStorage.CurrentRate;
             return 0;
         }
     }
