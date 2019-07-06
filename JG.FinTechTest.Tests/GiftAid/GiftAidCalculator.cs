@@ -12,18 +12,34 @@ namespace JG.FinTechTest.Tests.GiftAid
         [Test]
         public void Return_zero_when_donation_amount_is_0()
         {
-            const decimal donationAmount = 2.0M;
-            var sut = new GiftAidCalculator();
+            const decimal donationAmount = 0.0M;
+            var sut = new GiftAidCalculator(0);
 
             var result = sut.Calculate(donationAmount);
 
             Assert.That(result, Is.EqualTo(0));
         }
 
+        [Test]
+        public void Return_zero_when_tax_rate_is_0()
+        {
+            const decimal taxRate = 0.0M;
+            const decimal donationAmount = 0.0M;
+            var sut = new GiftAidCalculator(taxRate);
+
+            var result = sut.Calculate(donationAmount);
+
+            Assert.That(result, Is.EqualTo(0));
+        }
     }
 
     public class GiftAidCalculator
     {
+        public GiftAidCalculator(decimal taxRate)
+        {
+            
+        }
+
         public decimal Calculate(decimal donationAmount)
         {
             return 0;
