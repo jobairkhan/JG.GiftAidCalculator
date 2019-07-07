@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JG.FinTechTest.Controllers;
 using JG.FinTechTest.GiftAid;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -96,8 +97,9 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
             var response = await _httpClient.PostAsync($"api/giftAid", content);
 
             var actual = await response.Content.ReadAsStringAsync();
-            var giftAid = GetGiftAid(requestData.Amount);
             StringAssert.StartsWith("{\"id\":", actual);
+
+            var giftAid = GetGiftAid(requestData.Amount);
             StringAssert.EndsWith($"\"giftAidAmount\":{giftAid}}}", actual);
         }
 
@@ -118,12 +120,5 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
                 .Round2();
             return giftAid;
         }
-    }
-
-    public class DonationRequest
-    {
-        public string Name { get; set; }
-        public string PostCode { get; set; }
-        public decimal Amount { get; set; }
     }
 }

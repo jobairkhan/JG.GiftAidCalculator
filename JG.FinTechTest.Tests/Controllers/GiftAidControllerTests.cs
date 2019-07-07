@@ -109,6 +109,26 @@ namespace JG.FinTechTest.Tests.Controllers
             Assert.That(actualResult?.Value, Is.EqualTo("Invalid Amount, Amount cannot be less than 2"));
         }
 
+        [Test]
+        public async Task POST_Should_return_id()
+        {
+            var donationAmount = 100M;
+            var donation = new DonationRequest
+            {
+                Name = "X",
+                PostCode = "PC",
+                Amount = donationAmount
+            };
+            _taxRateStorage.CurrentRate.Returns(20);
+
+            var act = await _sut.Donate(donation, CancellationToken.None);
+
+
+            dynamic result = act?.Result;
+            var actual = result?.Value as DonationResponse;
+            Assert.That(actual?.Id, Is.EqualTo(1));
+        }
+
         private GiftAidRequest MakeRequest(decimal donationAmount)
         {
             return new GiftAidRequest()

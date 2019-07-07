@@ -59,5 +59,10 @@ namespace JG.FinTechTest.Controllers
 
             return Task.FromResult<ActionResult<GiftAidResponse>>(Ok(result));
         }
+
+        public async Task<ActionResult<DonationResponse>> Donate(DonationRequest donation, CancellationToken cancellationToken)
+        {
+            return new DonationResponse();
+        }
     }
 }
