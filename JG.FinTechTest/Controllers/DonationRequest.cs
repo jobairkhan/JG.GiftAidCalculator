@@ -1,9 +1,14 @@
-﻿namespace JG.FinTechTest.Controllers
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JG.FinTechTest.Controllers
 {
-    public class DonationRequest
+    public class DonationRequest : GiftAidRequest
     {
+        [Required]
         public string Name { get; set; }
+
+        [Required]
         public string PostCode { get; set; }
-        public decimal Amount { get; set; }
+        
     }
 }
