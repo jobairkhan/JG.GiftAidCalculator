@@ -1,9 +1,10 @@
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JG.FinTechTest.Data
 {
     public interface IRepository
     {
-        int Save(Donation donation, CancellationToken cancellation);
+        Task<int> Save(Donation donation, CancellationToken cancellation);
     }
 }

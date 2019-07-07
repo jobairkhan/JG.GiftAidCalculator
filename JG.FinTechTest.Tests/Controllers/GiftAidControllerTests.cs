@@ -113,25 +113,9 @@ namespace JG.FinTechTest.Tests.Controllers
             Assert.That(actualResult?.Value, Is.EqualTo("Invalid Amount, Amount cannot be less than 2"));
         }
 
-        [Test]
-        public async Task POST_Should_return_id()
-        {
-            var donationAmount = 100M;
-            var donation = new DonationRequest
-            {
-                Name = "X",
-                PostCode = "PC",
-                Amount = donationAmount
-            };
-            _taxRateStorage.CurrentRate.Returns(20);
-
-            var act = await _sut.Donate(donation, CancellationToken.None);
-
-            var actual = act?.Value as DonationResponse;
-            Assert.That(actual?.Id, Is.EqualTo(1));
-        }
-
+        [TestCase(1)]
         [TestCase(2)]
+        [TestCase(90)]
         public async Task POST_Should_return_correct_id(int expectedId)
         {
             var donationAmount = 100M;
@@ -178,7 +162,8 @@ namespace JG.FinTechTest.Tests.Controllers
                                         donationReq.PostCode,
                                         donationReq.Amount,
                                         0);
-            _repository.Received(1).Save(donation, CancellationToken.None);
+
+            await _repository.Received(1).Save(donation, CancellationToken.None);
         }
 
         private static DonationRequest MakeDonationRequest(decimal donationAmount)

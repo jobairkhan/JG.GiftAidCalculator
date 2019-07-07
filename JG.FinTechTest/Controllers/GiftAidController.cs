@@ -75,7 +75,7 @@ namespace JG.FinTechTest.Controllers
                                             model.PostCode,
                                             model.Amount,
                                             giftAid);
-            var id =_repository.Save(donation, cancellationToken);
+            var id = await _repository.Save(donation, cancellationToken);
 
             return new DonationResponse(id, giftAid);
         }

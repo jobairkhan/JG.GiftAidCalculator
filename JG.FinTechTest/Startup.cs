@@ -1,4 +1,7 @@
-﻿using JG.FinTechTest.Controllers;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using JG.FinTechTest.Controllers;
+using JG.FinTechTest.Data;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +24,7 @@ namespace JG.FinTechTest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddTransient<IRepository, Repository>();
             services.TryAddTransient<IStoreTaxRate, TaxRateStorage>();
             services.TryAddTransient<GiftAidCalculator>();
 
@@ -41,6 +45,14 @@ namespace JG.FinTechTest
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+    }
+
+    public class Repository : IRepository
+    {
+        public async Task<int> Save(Donation donation, CancellationToken cancellation)
+        {
+            return 1;
         }
     }
 }
