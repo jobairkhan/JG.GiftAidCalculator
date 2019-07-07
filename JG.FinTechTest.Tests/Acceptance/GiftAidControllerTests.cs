@@ -47,7 +47,7 @@ namespace JG.FinTechTest.Tests.Acceptance
         public async Task GiftAid_should_return_ok()
         {
             decimal donation = 100;
-            var result = await HttpClientInstance.GetAsync($"api/giftAid/{donation}", CancellationToken.None);
+            var result = await HttpClientInstance.GetAsync($"api/giftAid?amount={donation}", CancellationToken.None);
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
@@ -55,18 +55,19 @@ namespace JG.FinTechTest.Tests.Acceptance
         [Test()]
         public async Task GiftAid_should_return_correct_value()
         {
-            decimal donationAmount = 100;
-            decimal taxRate = 20;
-            var expectedGiftAid = donationAmount
+            decimal donationAmount = 100.00M;
+            decimal taxRate = 20M;
+            var giftAid = donationAmount
                 .GiftAidCalculation(taxRate)
-                .Round2()
-                .ToString();
+                .Round2();
+            var expected = $"{{\"donationAmount\":{donationAmount},\"giftAidAmount\":{giftAid}}}";
 
-            var response = await HttpClientInstance.GetAsync($"api/giftAid/{donationAmount}", CancellationToken.None);
+
+        var response = await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
 
             var actual = await response.Content.ReadAsStringAsync();
-
-            Assert.That(actual, Is.EqualTo(expectedGiftAid));
+            
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }

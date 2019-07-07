@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.GiftAid;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JG.FinTechTest.Controllers
@@ -21,15 +22,26 @@ namespace JG.FinTechTest.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("ping")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Test()
         {
             return Ok("Hello World");
         }
 
-        [HttpGet, Route("{donation}")]
-        public async Task<ActionResult<decimal>> GetGiftAid([FromRoute]decimal donation, CancellationToken cancellation)
+        /// <summary>
+        /// Get the amount of gift aid reclaimable for donation amount
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="cancellation"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery]decimal amount, CancellationToken cancellation)
         {
-            var result = _calculator.Calculate(donation);
+            var giftAid = _calculator.Calculate(amount);
+
+            var result = new  GiftAidResponse(amount, giftAid);
+
             return Ok(result);
         }
     }

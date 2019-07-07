@@ -52,7 +52,7 @@ namespace JG.FinTechTest.Tests.Controllers
 
 
             dynamic actual = act?.Result;
-            Assert.That(actual?.Value, Is.EqualTo(expected));
+            Assert.That(actual?.Value?.GiftAidAmount, Is.EqualTo(expected));
         }
     }
 }
