@@ -48,7 +48,7 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
         }
 
         [Test()]
-        public async Task GiftAid_should_return_ok()
+        public async Task GET_should_return_ok()
         {
             const decimal donation = 100;
             var result = await _httpClient.GetAsync($"api/giftAid?amount={donation}", CancellationToken.None);
@@ -57,7 +57,7 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
         }
 
         [Test]
-        public async Task GiftAid_should_return_correct_value()
+        public async Task GET_should_return_correct_value()
         {
             const decimal donationAmount = 100.00M;
             var giftAid = GetGiftAid(donationAmount);
@@ -72,7 +72,7 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
         }
 
         [Test]
-        public async Task Should_Return_error_when_amount_is_less_than_minimum()
+        public async Task GET_Should_Return_error_when_amount_is_less_than_minimum()
         {
             decimal donationAmount = 0.00M;
 
@@ -84,7 +84,7 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
         }
 
         [Test]
-        public async Task Should_return_saved_Id_with_gift_aid()
+        public async Task POST_should_return_saved_Id_with_gift_aid()
         {
             var requestData = new DonationRequest
             {
