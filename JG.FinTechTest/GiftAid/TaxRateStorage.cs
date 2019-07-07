@@ -1,4 +1,4 @@
-﻿namespace JG.FinTechTest
+﻿namespace JG.FinTechTest.GiftAid
 {
     public class TaxRateStorage
     {
