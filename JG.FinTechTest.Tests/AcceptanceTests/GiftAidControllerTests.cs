@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -6,22 +7,23 @@ using System.Threading.Tasks;
 using JG.FinTechTest.GiftAid;
 using NUnit.Framework;
 
-namespace JG.FinTechTest.Tests.Acceptance
+namespace JG.FinTechTest.Tests.AcceptanceTests
 {
     [TestFixture()]
+    [SuppressMessage("ReSharper", "TestFileNameSpaceWarning")]
     public class GiftAidControllerTests
     {
-        private ApiWebApplicationFactory factory;
+        private ApiWebApplicationFactory _factory;
 
-        private HttpClient HttpClientInstance { get; set; }
+        private HttpClient _httpClient;
 
         [OneTimeSetUp]
         public void GivenARequestToTheController()
         {
-            factory = new ApiWebApplicationFactory();
-            HttpClientInstance = factory.CreateClient();
+            _factory = new ApiWebApplicationFactory();
+            _httpClient = _factory.CreateClient();
 
-            HttpClientInstance
+            _httpClient
                 .DefaultRequestHeaders
                 .Accept
                 .Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -30,14 +32,14 @@ namespace JG.FinTechTest.Tests.Acceptance
         [OneTimeTearDown]
         public void TearDown()
         {
-            HttpClientInstance?.Dispose();
-            factory?.Dispose();
+            _httpClient?.Dispose();
+            _factory?.Dispose();
         }
 
         [Test()]
         public async Task Test_should_return_ok()
         {
-            var result = await HttpClientInstance.GetAsync($"api/giftAid/ping", CancellationToken.None);
+            var result = await _httpClient.GetAsync($"api/giftAid/ping", CancellationToken.None);
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
@@ -46,7 +48,7 @@ namespace JG.FinTechTest.Tests.Acceptance
         public async Task GiftAid_should_return_ok()
         {
             const decimal donation = 100;
-            var result = await HttpClientInstance.GetAsync($"api/giftAid?amount={donation}", CancellationToken.None);
+            var result = await _httpClient.GetAsync($"api/giftAid?amount={donation}", CancellationToken.None);
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
@@ -62,7 +64,7 @@ namespace JG.FinTechTest.Tests.Acceptance
             var expected = $"{{\"donationAmount\":{donationAmount},\"giftAidAmount\":{giftAid}}}";
 
 
-            var response = await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
+            var response = await _httpClient.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
 
             var actual = await response.Content.ReadAsStringAsync();
 
@@ -74,7 +76,7 @@ namespace JG.FinTechTest.Tests.Acceptance
         {
             decimal donationAmount = 0.00M;
 
-            var response = await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
+            var response = await _httpClient.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
 
             var actual = await response.Content.ReadAsStringAsync();
 
