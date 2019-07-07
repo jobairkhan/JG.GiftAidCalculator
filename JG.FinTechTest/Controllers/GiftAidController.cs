@@ -43,12 +43,7 @@ namespace JG.FinTechTest.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var valueErrors = ModelState.Values
-                                            .SelectMany(x => x.Errors)
-                                            .Select(x => x.ErrorMessage)
-                                            .ToArray();
-
-                var error = string.Join(", ", valueErrors);
+                var error = BuildErrorMessage();
                 return Task.FromResult<ActionResult<GiftAidResponse>>(BadRequest(error));
             }
             var giftAid = _calculator.Calculate(model.Amount);
@@ -60,9 +55,26 @@ namespace JG.FinTechTest.Controllers
             return Task.FromResult<ActionResult<GiftAidResponse>>(Ok(result));
         }
 
-        public async Task<ActionResult<DonationResponse>> Donate(DonationRequest donation, CancellationToken cancellationToken)
+        public async Task<ActionResult<DonationResponse>> Donate(DonationRequest model, CancellationToken cancellationToken)
         {
-            return new DonationResponse();
+            if (!ModelState.IsValid)
+            {
+                var error = BuildErrorMessage();
+                return BadRequest(error);
+            }
+            var giftAid = _calculator.Calculate(model.Amount);
+            return new DonationResponse(1, giftAid);
+        }
+
+        private string BuildErrorMessage()
+        {
+            var valueErrors = ModelState.Values
+                .SelectMany(x => x.Errors)
+                .Select(x => x.ErrorMessage)
+                .ToArray();
+
+            var error = string.Join(", ", valueErrors);
+            return error;
         }
     }
 }

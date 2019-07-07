@@ -36,7 +36,7 @@ namespace JG.FinTechTest.Tests.Controllers
         {
             const decimal donationAmount = 100M;
 
-            var actual = await _sut.GetGiftAid(MakeRequest(donationAmount), CancellationToken.None);
+            var actual = await _sut.GetGiftAid(MakeGiftAidRequest(donationAmount), CancellationToken.None);
 
             Assert.That(actual?.Result, Is.InstanceOf<OkObjectResult>());
         }
@@ -45,7 +45,7 @@ namespace JG.FinTechTest.Tests.Controllers
         public async Task GET_Should_return_CorrectValue()
         {
             const decimal taxRate = 20;
-            var donation = MakeRequest(100M);
+            var donation = MakeGiftAidRequest(100M);
             var expected = donation.Amount.GiftAidCalculation(taxRate).Round2();
             _taxRateStorage.CurrentRate.Returns(20);
 
@@ -60,7 +60,7 @@ namespace JG.FinTechTest.Tests.Controllers
         public async Task GET_Should_return_correct_amount()
         {
             var donationAmount = 100M;
-            var donation = MakeRequest(donationAmount);
+            var donation = MakeGiftAidRequest(donationAmount);
             _taxRateStorage.CurrentRate.Returns(20);
 
             var act = await _sut.GetGiftAid(donation, CancellationToken.None);
@@ -74,18 +74,18 @@ namespace JG.FinTechTest.Tests.Controllers
         public async Task GET_Should_return_bad_request_when_invalid_state()
         {
             var donationAmount = 1M;
-            var donation = MakeRequest(donationAmount);
+            var donation = MakeGiftAidRequest(donationAmount);
             _sut.ModelState.AddModelError("Amount", "Invalid Amount");
 
             var actual = await _sut.GetGiftAid(donation, CancellationToken.None);
-            
+
             Assert.That(actual?.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public void Should_ThrowIfCancellationRequested()
         {
-            var donation = MakeRequest(10);
+            var donation = MakeGiftAidRequest(10);
             var cts = new CancellationTokenSource();
             cts.Cancel();
             var cancellationToken = cts.Token;
@@ -99,7 +99,7 @@ namespace JG.FinTechTest.Tests.Controllers
         public async Task GET_Should_return_all_errors_when_multiple_errors()
         {
             var donationAmount = 1M;
-            var donation = MakeRequest(donationAmount);
+            var donation = MakeGiftAidRequest(donationAmount);
             _sut.ModelState.AddModelError("Amount", "Invalid Amount");
             _sut.ModelState.AddModelError("Amount", "Amount cannot be less than 2");
 
@@ -123,13 +123,47 @@ namespace JG.FinTechTest.Tests.Controllers
 
             var act = await _sut.Donate(donation, CancellationToken.None);
 
-
-            dynamic result = act?.Result;
-            var actual = result?.Value as DonationResponse;
+            var actual = act?.Value as DonationResponse;
             Assert.That(actual?.Id, Is.EqualTo(1));
         }
 
-        private GiftAidRequest MakeRequest(decimal donationAmount)
+        [Test]
+        public async Task POST_Should_return_gift_aid_amount()
+        {
+            const decimal rate = 20;
+            const decimal donationAmount = 100M;
+            var donation = MakeDonationRequest(donationAmount);
+            _taxRateStorage.CurrentRate.Returns(rate);
+
+            var act = await _sut.Donate(donation, CancellationToken.None);
+
+            var expected = donationAmount.GiftAidCalculation(rate).Round2();
+            Assert.That(act?.Value?.GiftAid, Is.EqualTo(expected));
+        }
+
+        private static DonationRequest MakeDonationRequest(decimal donationAmount)
+        {
+            return new DonationRequest
+            {
+                Name = "X",
+                PostCode = "PC",
+                Amount = donationAmount
+            };
+        }
+
+        [Test]
+        public async Task POST_Should_return_bad_request_when_invalid_state()
+        {
+            var donationAmount = 1M;
+            var donation = MakeDonationRequest(donationAmount);
+            _sut.ModelState.AddModelError("Amount", "Invalid Amount");
+
+            var actual = await _sut.Donate(donation, CancellationToken.None);
+
+            Assert.That(actual?.Result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        private GiftAidRequest MakeGiftAidRequest(decimal donationAmount)
         {
             return new GiftAidRequest()
             {
