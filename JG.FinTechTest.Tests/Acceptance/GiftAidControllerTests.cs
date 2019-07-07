@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using JG.FinTechTest.GiftAid;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.Acceptance
@@ -44,9 +46,27 @@ namespace JG.FinTechTest.Tests.Acceptance
         [Test()]
         public async Task GiftAid_should_return_ok()
         {
-            var result = await HttpClientInstance.GetAsync($"api/giftAid", CancellationToken.None);
+            decimal donation = 100;
+            var result = await HttpClientInstance.GetAsync($"api/giftAid/{donation}", CancellationToken.None);
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test()]
+        public async Task GiftAid_should_return_correct_value()
+        {
+            decimal donationAmount = 100;
+            decimal taxRate = 20;
+            var expectedGiftAid = donationAmount
+                .GiftAidCalculation(taxRate)
+                .Round2()
+                .ToString();
+
+            var response = await HttpClientInstance.GetAsync($"api/giftAid/{donationAmount}", CancellationToken.None);
+
+            var actual = await response.Content.ReadAsStringAsync();
+
+            Assert.That(actual, Is.EqualTo(expectedGiftAid));
         }
     }
 }

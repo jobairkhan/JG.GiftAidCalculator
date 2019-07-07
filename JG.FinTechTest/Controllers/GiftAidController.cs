@@ -26,9 +26,10 @@ namespace JG.FinTechTest.Controllers
             return Ok("Hello World");
         }
 
-        public async Task<ActionResult<decimal>> GetGiftAid(decimal donationAmount, CancellationToken cancellation)
+        [HttpGet, Route("{donation}")]
+        public async Task<ActionResult<decimal>> GetGiftAid([FromRoute]decimal donation, CancellationToken cancellation)
         {
-            var result = _calculator.Calculate(donationAmount);
+            var result = _calculator.Calculate(donation);
             return Ok(result);
         }
     }
