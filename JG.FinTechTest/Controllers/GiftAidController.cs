@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.Data;

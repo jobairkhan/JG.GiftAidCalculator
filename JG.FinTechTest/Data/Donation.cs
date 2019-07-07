@@ -1,14 +1,16 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JG.FinTechTest.Data
 {
     public class Donation : IEquatable<Donation>
     {
-        public int Id { get; }
-        public string Name { get; }
-        public string PostCode { get; }
-        public decimal Amount { get; }
-        public decimal GiftAid { get; }
+        [Key]
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+        public string PostCode { get; private set; }
+        public decimal Amount { get; private set; }
+        public decimal GiftAid { get; private set; }
 
         private Donation()
         {

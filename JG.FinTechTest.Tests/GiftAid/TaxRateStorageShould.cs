@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using JG.FinTechTest.GiftAid;
+﻿using JG.FinTechTest.GiftAid;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.GiftAid

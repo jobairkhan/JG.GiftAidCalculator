@@ -1,12 +1,10 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.Controllers;
 using JG.FinTechTest.Data;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -147,7 +145,7 @@ namespace JG.FinTechTest.Tests.Controllers
             var expected = donationAmount.GiftAidCalculation(rate).Round2();
 
             var actual = ConvertToDonationResponse(act);
-            Assert.That(actual?.GiftAid, Is.EqualTo(expected));
+            Assert.That(actual?.GiftAidAmount, Is.EqualTo(expected));
         }
 
         [Test]

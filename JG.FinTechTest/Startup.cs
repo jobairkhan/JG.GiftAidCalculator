@@ -1,9 +1,10 @@
-﻿using JG.FinTechTest.Controllers;
+﻿using System;
 using JG.FinTechTest.Data;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,6 +26,12 @@ namespace JG.FinTechTest
             services.TryAddTransient<IRepository, Repository>();
             services.TryAddTransient<IStoreTaxRate, TaxRateStorage>();
             services.TryAddTransient<GiftAidCalculator>();
+
+            services.AddScoped<GiftAidDbContext>();
+            services.AddScoped(x => new DbContextOptionsBuilder<DbContext>()
+                //.UseSqlite(@"Data Source=.\GiftAid.db")
+                .UseInMemoryDatabase("GiftAid")
+                .Options);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
