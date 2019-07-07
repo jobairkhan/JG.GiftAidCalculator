@@ -2,9 +2,11 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.GiftAid;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.AcceptanceTests
@@ -57,10 +59,7 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
         public async Task GiftAid_should_return_correct_value()
         {
             const decimal donationAmount = 100.00M;
-            const decimal taxRate = 20M;
-            var giftAid = donationAmount
-                .GiftAidCalculation(taxRate)
-                .Round2();
+            var giftAid = GetGiftAid(donationAmount);
             var expected = $"{{\"donationAmount\":{donationAmount},\"giftAidAmount\":{giftAid}}}";
 
 
@@ -82,5 +81,49 @@ namespace JG.FinTechTest.Tests.AcceptanceTests
 
             Assert.That(actual, Is.EqualTo("{\"amount\":[\"The field Amount must be between 2 and 100000.\"]}"));
         }
+
+        [Test]
+        public async Task Should_return_saved_Id_with_gift_aid()
+        {
+            var requestData = new DonationRequest
+            {
+                Name = "Mr. X",
+                PostCode = "SE1 0TA",
+                Amount = 100M
+            };
+            var content = CreateHttpContent(requestData);
+
+            var response = await _httpClient.PostAsync($"api/giftAid", content);
+
+            var actual = await response.Content.ReadAsStringAsync();
+            var giftAid = GetGiftAid(requestData.Amount);
+            StringAssert.StartsWith("{\"id\":", actual);
+            StringAssert.EndsWith($"\"giftAidAmount\":{giftAid}}}", actual);
+        }
+
+        private static ByteArrayContent CreateHttpContent(DonationRequest requestData)
+        {
+            var jsonContent = JsonConvert.SerializeObject(requestData);
+            var buffer = Encoding.UTF8.GetBytes(jsonContent);
+            var content = new ByteArrayContent(buffer);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
+        }
+
+        private static decimal GetGiftAid(decimal donationAmount)
+        {
+            const decimal taxRate = 20M;
+            var giftAid = donationAmount
+                .GiftAidCalculation(taxRate)
+                .Round2();
+            return giftAid;
+        }
+    }
+
+    public class DonationRequest
+    {
+        public string Name { get; set; }
+        public string PostCode { get; set; }
+        public decimal Amount { get; set; }
     }
 }
