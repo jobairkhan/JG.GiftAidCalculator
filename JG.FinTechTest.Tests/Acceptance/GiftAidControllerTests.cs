@@ -74,7 +74,7 @@ namespace JG.FinTechTest.Tests.Acceptance
         }
 
         [Test]
-        public async Task Should_ThrowIfCancellationRequested()
+        public void Should_ThrowIfCancellationRequested()
         {
             decimal donationAmount = 100.00M;
             var cts = new CancellationTokenSource();
