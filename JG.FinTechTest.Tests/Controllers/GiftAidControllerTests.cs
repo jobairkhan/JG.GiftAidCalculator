@@ -3,8 +3,10 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.Controllers;
+using JG.FinTechTest.Data;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -15,13 +17,15 @@ namespace JG.FinTechTest.Tests.Controllers
     {
         GiftAidController _sut;
         IStoreTaxRate _taxRateStorage;
+        private IRepository _repository;
 
         [SetUp]
         public void Setup()
         {
             _taxRateStorage = Substitute.For<IStoreTaxRate>();
+            _repository = Substitute.For<IRepository>();
             GiftAidCalculator calc = new GiftAidCalculator(_taxRateStorage);
-            _sut = new GiftAidController(calc);
+            _sut = new GiftAidController(calc, _repository);
         }
 
         [Test]
@@ -127,6 +131,25 @@ namespace JG.FinTechTest.Tests.Controllers
             Assert.That(actual?.Id, Is.EqualTo(1));
         }
 
+        [TestCase(2)]
+        public async Task POST_Should_return_correct_id(int expectedId)
+        {
+            var donationAmount = 100M;
+            var donation = new DonationRequest
+            {
+                Name = "X",
+                PostCode = "PC",
+                Amount = donationAmount
+            };
+            _taxRateStorage.CurrentRate.Returns(20);
+            _repository.Save(Arg.Any<Donation>(), Arg.Any<CancellationToken>()).ReturnsForAnyArgs(expectedId);
+
+            var act = await _sut.Donate(donation, CancellationToken.None);
+
+            var actual = act?.Value as DonationResponse;
+            Assert.That(actual?.Id, Is.EqualTo(expectedId));
+        }
+
         [Test]
         public async Task POST_Should_return_gift_aid_amount()
         {
@@ -139,6 +162,23 @@ namespace JG.FinTechTest.Tests.Controllers
 
             var expected = donationAmount.GiftAidCalculation(rate).Round2();
             Assert.That(act?.Value?.GiftAid, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task POST_Should_call_save()
+        {
+            const decimal rate = 20;
+            const decimal donationAmount = 100M;
+            var donationReq = MakeDonationRequest(donationAmount);
+            _taxRateStorage.CurrentRate.Returns(rate);
+
+            await _sut.Donate(donationReq, CancellationToken.None);
+
+            var donation = Donation.MakeNew(donationReq.Name,
+                                        donationReq.PostCode,
+                                        donationReq.Amount,
+                                        0);
+            _repository.Received(1).Save(donation, CancellationToken.None);
         }
 
         private static DonationRequest MakeDonationRequest(decimal donationAmount)

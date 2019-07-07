@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JG.FinTechTest.Data;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,12 @@ namespace JG.FinTechTest.Controllers
     public class GiftAidController : ControllerBase
     {
         private readonly GiftAidCalculator _calculator;
+        private readonly IRepository _repository;
 
-        public GiftAidController(GiftAidCalculator calculator)
+        public GiftAidController(GiftAidCalculator calculator, IRepository repository)
         {
             _calculator = calculator;
+            _repository = repository;
         }
 
         /// <summary>
@@ -46,9 +49,10 @@ namespace JG.FinTechTest.Controllers
                 var error = BuildErrorMessage();
                 return Task.FromResult<ActionResult<GiftAidResponse>>(BadRequest(error));
             }
-            var giftAid = _calculator.Calculate(model.Amount);
 
             cancellation.ThrowIfCancellationRequested();
+
+            var giftAid = _calculator.Calculate(model.Amount);
 
             var result = new GiftAidResponse(model.Amount, giftAid);
 
@@ -62,8 +66,18 @@ namespace JG.FinTechTest.Controllers
                 var error = BuildErrorMessage();
                 return BadRequest(error);
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             var giftAid = _calculator.Calculate(model.Amount);
-            return new DonationResponse(1, giftAid);
+
+            var donation = Donation.MakeNew(model.Name,
+                                            model.PostCode,
+                                            model.Amount,
+                                            giftAid);
+            var id =_repository.Save(donation, cancellationToken);
+
+            return new DonationResponse(id, giftAid);
         }
 
         private string BuildErrorMessage()
