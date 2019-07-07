@@ -1,10 +1,13 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Mvc;
+using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.Acceptance
@@ -52,7 +55,7 @@ namespace JG.FinTechTest.Tests.Acceptance
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test()]
+        [Test]
         public async Task GiftAid_should_return_correct_value()
         {
             decimal donationAmount = 100.00M;
@@ -63,11 +66,24 @@ namespace JG.FinTechTest.Tests.Acceptance
             var expected = $"{{\"donationAmount\":{donationAmount},\"giftAidAmount\":{giftAid}}}";
 
 
-        var response = await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
+            var response = await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
 
             var actual = await response.Content.ReadAsStringAsync();
-            
+
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task Should_ThrowIfCancellationRequested()
+        {
+            decimal donationAmount = 100.00M;
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            var cancellationToken = cts.Token;
+
+            Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", cancellationToken)
+            );
         }
     }
 }

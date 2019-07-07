@@ -36,13 +36,14 @@ namespace JG.FinTechTest.Controllers
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery]decimal amount, CancellationToken cancellation)
+        public Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery] decimal amount,
+                                                                    CancellationToken cancellation)
         {
             var giftAid = _calculator.Calculate(amount);
 
             var result = new  GiftAidResponse(amount, giftAid);
 
-            return Ok(result);
+            return Task.FromResult<ActionResult<GiftAidResponse>>(Ok(result));
         }
     }
 }
