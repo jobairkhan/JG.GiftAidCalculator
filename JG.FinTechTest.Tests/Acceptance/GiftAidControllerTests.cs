@@ -1,13 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.GiftAid;
-using Microsoft.AspNetCore.Mvc;
-using NSubstitute;
-using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.Acceptance
@@ -49,7 +45,7 @@ namespace JG.FinTechTest.Tests.Acceptance
         [Test()]
         public async Task GiftAid_should_return_ok()
         {
-            decimal donation = 100;
+            const decimal donation = 100;
             var result = await HttpClientInstance.GetAsync($"api/giftAid?amount={donation}", CancellationToken.None);
 
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -58,8 +54,8 @@ namespace JG.FinTechTest.Tests.Acceptance
         [Test]
         public async Task GiftAid_should_return_correct_value()
         {
-            decimal donationAmount = 100.00M;
-            decimal taxRate = 20M;
+            const decimal donationAmount = 100.00M;
+            const decimal taxRate = 20M;
             var giftAid = donationAmount
                 .GiftAidCalculation(taxRate)
                 .Round2();
@@ -74,16 +70,15 @@ namespace JG.FinTechTest.Tests.Acceptance
         }
 
         [Test]
-        public void Should_ThrowIfCancellationRequested()
+        public async Task Should_Return_error_when_amount_is_less_than_minimum()
         {
-            decimal donationAmount = 100.00M;
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-            var cancellationToken = cts.Token;
+            decimal donationAmount = 0.00M;
 
-            Assert.ThrowsAsync<OperationCanceledException>(async () =>
-            await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", cancellationToken)
-            );
+            var response = await HttpClientInstance.GetAsync($"api/giftAid?amount={donationAmount}", CancellationToken.None);
+
+            var actual = await response.Content.ReadAsStringAsync();
+
+            Assert.That(actual, Is.EqualTo("{\"amount\":[\"The field Amount must be between 2 and 100000.\"]}"));
         }
     }
 }

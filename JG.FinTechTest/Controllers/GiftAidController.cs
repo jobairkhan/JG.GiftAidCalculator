@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System.IO.Compression;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Http;
@@ -39,11 +41,21 @@ namespace JG.FinTechTest.Controllers
         [Produces("application/json")]
         public Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery]GiftAidRequest model, CancellationToken cancellation)
         {
+            if (!ModelState.IsValid)
+            {
+                var valueErrors = ModelState.Values
+                                            .SelectMany(x => x.Errors)
+                                            .Select(x => x.ErrorMessage)
+                                            .ToArray();
+
+                var error = string.Join(", ", valueErrors);
+                return Task.FromResult<ActionResult<GiftAidResponse>>(BadRequest(error));
+            }
             var giftAid = _calculator.Calculate(model.Amount);
 
             cancellation.ThrowIfCancellationRequested();
-            
-            var result = new  GiftAidResponse(model.Amount, giftAid);
+
+            var result = new GiftAidResponse(model.Amount, giftAid);
 
             return Task.FromResult<ActionResult<GiftAidResponse>>(Ok(result));
         }
