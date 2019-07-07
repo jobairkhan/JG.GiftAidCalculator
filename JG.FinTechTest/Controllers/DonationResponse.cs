@@ -2,10 +2,10 @@
 {
     public class DonationResponse
     {
-        public DonationResponse(int id, decimal giftAid)
+        public DonationResponse(int id, decimal giftAidAmount)
         {
             Id = id;
-            GiftAid = giftAid;
+            GiftAidAmount = giftAidAmount;
         }
 
         /// <summary>
@@ -16,6 +16,6 @@
         /// <summary>
         /// Gift aid amount
         /// </summary>
-        public decimal GiftAid { get; }
+        public decimal GiftAidAmount { get; }
     }
 }
