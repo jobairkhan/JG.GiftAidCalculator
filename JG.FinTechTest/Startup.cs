@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using JG.FinTechTest.Controllers;
+﻿using JG.FinTechTest.Controllers;
 using JG.FinTechTest.Data;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Builder;
@@ -45,14 +43,6 @@ namespace JG.FinTechTest
 
             app.UseHttpsRedirection();
             app.UseMvc();
-        }
-    }
-
-    public class Repository : IRepository
-    {
-        public async Task<int> Save(Donation donation, CancellationToken cancellation)
-        {
-            return 1;
         }
     }
 }
