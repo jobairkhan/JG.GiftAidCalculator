@@ -10,7 +10,7 @@ namespace JG.FinTechTest.Controllers
         /// Ping
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, Route("ping")]
         public IActionResult Test()
         {
             return Ok("Hello World");
