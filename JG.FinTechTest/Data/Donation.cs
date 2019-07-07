@@ -1,8 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace JG.FinTechTest.Data
 {
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public class Donation : IEquatable<Donation>
     {
         [Key]

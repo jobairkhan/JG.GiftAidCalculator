@@ -4,12 +4,14 @@ using Microsoft.EntityFrameworkCore;
 namespace JG.FinTechTest.Data
 {
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class GiftAidDbContext : DbContext
     {
         private static bool _created = false;
         
         public GiftAidDbContext(DbContextOptions<DbContext> dbContextOptions) : base(dbContextOptions)
         {
+            //TODO: Temporary solution
             if (!_created)
             {
                 _created = true;

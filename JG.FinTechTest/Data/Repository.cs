@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JG.FinTechTest.Data
@@ -10,6 +11,8 @@ namespace JG.FinTechTest.Data
 
         public Repository(GiftAidDbContext context)
         {
+            Debug.Assert(context != null, $"{nameof(context)} != null");
+
             _context = context;
         }
         public async Task<int> Save(Donation donation, CancellationToken cancellation)
