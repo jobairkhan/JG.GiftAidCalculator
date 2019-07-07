@@ -33,20 +33,20 @@ namespace JG.FinTechTest.Tests.Acceptance
             factory?.Dispose();
         }
 
-        [Test()]
-        public async Task Test_should_return_ok()
-        {
-            var result = await HttpClientInstance.GetAsync($"api/giftAid/ping", CancellationToken.None);
+        //[Test()]
+        //public async Task Test_should_return_ok()
+        //{
+        //    var result = await HttpClientInstance.GetAsync($"api/giftAid/ping", CancellationToken.None);
 
-            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        }
+        //    Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        //}
 
-        [Test()]
-        public async Task GiftAid_should_return_ok()
-        {
-            var result = await HttpClientInstance.GetAsync($"api/giftAid", CancellationToken.None);
+        //[Test()]
+        //public async Task GiftAid_should_return_ok()
+        //{
+        //    var result = await HttpClientInstance.GetAsync($"api/giftAid", CancellationToken.None);
 
-            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        }
+        //    Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        //}
     }
 }
