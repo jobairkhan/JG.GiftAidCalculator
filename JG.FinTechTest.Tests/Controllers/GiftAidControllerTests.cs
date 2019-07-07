@@ -35,7 +35,7 @@ namespace JG.FinTechTest.Tests.Controllers
         {
             const decimal donationAmount = 100M;
 
-            var actual = await _sut.GetGiftAid(donationAmount, CancellationToken.None);
+            var actual = await _sut.GetGiftAid(MakeRequest(donationAmount), CancellationToken.None);
 
             Assert.That(actual?.Result, Is.InstanceOf<OkObjectResult>());
         }
@@ -43,16 +43,38 @@ namespace JG.FinTechTest.Tests.Controllers
         [Test]
         public async Task GET_Should_return_CorrectValue()
         {
-            const decimal donationAmount = 100M;
             const decimal taxRate = 20;
-            var expected = donationAmount.GiftAidCalculation(taxRate).Round2();
+            var donation = MakeRequest(100M);
+            var expected = donation.Amount.GiftAidCalculation(taxRate).Round2();
             _taxRateStorage.CurrentRate.Returns(20);
 
-            var act = await _sut.GetGiftAid(donationAmount, CancellationToken.None);
+            var act = await _sut.GetGiftAid(donation, CancellationToken.None);
 
 
             dynamic actual = act?.Result;
             Assert.That(actual?.Value?.GiftAidAmount, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task GET_Should_return_correct_amount()
+        {
+            var donationAmount = 100M;
+            var donation = MakeRequest(donationAmount);
+            _taxRateStorage.CurrentRate.Returns(20);
+
+            var act = await _sut.GetGiftAid(donation, CancellationToken.None);
+
+
+            dynamic actual = act?.Result;
+            Assert.That(actual?.Value?.DonationAmount, Is.EqualTo(donationAmount));
+        }
+
+        private GiftAidRequest MakeRequest(decimal donationAmount)
+        {
+            return new GiftAidRequest()
+            {
+                Amount = donationAmount
+            };
         }
     }
 }

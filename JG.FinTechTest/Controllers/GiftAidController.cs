@@ -31,20 +31,19 @@ namespace JG.FinTechTest.Controllers
         /// <summary>
         /// Get the amount of gift aid reclaimable for donation amount
         /// </summary>
-        /// <param name="amount"></param>
+        /// <param name="model"></param>
         /// <param name="cancellation"></param>
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery] decimal amount,
-                                                                    CancellationToken cancellation)
+        public Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery]GiftAidRequest model, CancellationToken cancellation)
         {
-            var giftAid = _calculator.Calculate(amount);
+            var giftAid = _calculator.Calculate(model.Amount);
 
             cancellation.ThrowIfCancellationRequested();
             
-            var result = new  GiftAidResponse(amount, giftAid);
+            var result = new  GiftAidResponse(model.Amount, giftAid);
 
             return Task.FromResult<ActionResult<GiftAidResponse>>(Ok(result));
         }
