@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JG.FinTechTest.Controllers;
 using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Mvc;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.Controllers
@@ -12,10 +13,14 @@ namespace JG.FinTechTest.Tests.Controllers
     public class GiftAidControllerTests
     {
         GiftAidController _sut;
+        IStoreTaxRate _taxRateStorage;
+
         [SetUp]
         public void Setup()
         {
-            _sut = new GiftAidController();
+            _taxRateStorage = Substitute.For<IStoreTaxRate>();
+            GiftAidCalculator calc = new GiftAidCalculator(_taxRateStorage);
+            _sut = new GiftAidController(calc);
         }
 
         [Test]
@@ -40,13 +45,14 @@ namespace JG.FinTechTest.Tests.Controllers
         {
             const decimal donationAmount = 100M;
             const decimal taxRate = 20;
-            decimal expected = donationAmount.GiftAidCalculation(taxRate).Round2();
+            var expected = donationAmount.GiftAidCalculation(taxRate).Round2();
+            _taxRateStorage.CurrentRate.Returns(20);
 
             var act = await _sut.GetGiftAid(donationAmount, CancellationToken.None);
 
 
             dynamic actual = act?.Result;
-            Assert.That(actual.Value, Is.EqualTo(expected));
+            Assert.That(actual?.Value, Is.EqualTo(expected));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using JG.FinTechTest.GiftAid;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JG.FinTechTest.Controllers
@@ -8,6 +9,13 @@ namespace JG.FinTechTest.Controllers
     [ApiController]
     public class GiftAidController : ControllerBase
     {
+        private readonly GiftAidCalculator _calculator;
+
+        public GiftAidController(GiftAidCalculator calculator)
+        {
+            _calculator = calculator;
+        }
+
         /// <summary>
         /// Ping
         /// </summary>
@@ -20,7 +28,8 @@ namespace JG.FinTechTest.Controllers
 
         public async Task<ActionResult<decimal>> GetGiftAid(decimal donationAmount, CancellationToken cancellation)
         {
-            return Ok(0M);
+            var result = _calculator.Calculate(donationAmount);
+            return Ok(result);
         }
     }
 }
