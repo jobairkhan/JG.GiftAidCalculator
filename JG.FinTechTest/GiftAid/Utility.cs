@@ -1,6 +1,6 @@
 using System;
 
-namespace JG.FinTechTest.Tests.GiftAid
+namespace JG.FinTechTest.GiftAid
 {
     public static class Utility
     {

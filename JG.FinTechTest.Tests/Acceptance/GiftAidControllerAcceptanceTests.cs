@@ -1,18 +1,12 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.Acceptance
 {
-    internal class ApiWebApplicationFactory : WebApplicationFactory<Startup>
-    {
-    }
-
     [TestFixture]
     public class GiftAidControllerAcceptanceTests
     {

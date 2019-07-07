@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="GiftAid\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

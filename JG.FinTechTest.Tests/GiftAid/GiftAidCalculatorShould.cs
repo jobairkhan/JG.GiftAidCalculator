@@ -1,6 +1,6 @@
-﻿using System;
-using NUnit.Framework;
+﻿using JG.FinTechTest.GiftAid;
 using NSubstitute;
+using NUnit.Framework;
 
 namespace JG.FinTechTest.Tests.GiftAid
 {
@@ -60,31 +60,11 @@ namespace JG.FinTechTest.Tests.GiftAid
 
             var result = _sut.Calculate(donationAmount);
 
-            var expectedGiftAid = donationAmount.GiftAidCalculation(taxRate)
-                                                .Round2();
+            var expectedGiftAid = donationAmount
+                                    .GiftAidCalculation(taxRate)
+                                    .Round2();
 
             Assert.That(result, Is.EqualTo(expectedGiftAid));
-        }
-    }
-
-    public interface IStoreTaxRate
-    {
-        decimal CurrentRate { get; }
-    }
-
-    public class GiftAidCalculator
-    {
-        private readonly IStoreTaxRate _taxRateStorage;
-
-        public GiftAidCalculator(IStoreTaxRate taxRateStorage)
-        {
-            _taxRateStorage = taxRateStorage;
-        }
-
-        public decimal Calculate(decimal donationAmount)
-        {
-            var result = donationAmount.GiftAidCalculation(_taxRateStorage.CurrentRate);
-            return result.Round2();
         }
     }
 }
