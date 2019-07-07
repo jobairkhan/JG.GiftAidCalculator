@@ -21,7 +21,7 @@ namespace JG.FinTechTest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.TryAddTransient<IStoreTaxRate, TaxRateStorage>();
+            services.TryAddTransient<IStoreTaxRate, TaxRateStorage>();
             services.TryAddTransient<GiftAidCalculator>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
