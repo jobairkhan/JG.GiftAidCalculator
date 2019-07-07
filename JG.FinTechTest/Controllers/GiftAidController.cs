@@ -41,6 +41,7 @@ namespace JG.FinTechTest.Controllers
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Produces("application/json")]
         public Task<ActionResult<GiftAidResponse>> GetGiftAid([FromQuery]GiftAidRequest model, CancellationToken cancellation)
         {
@@ -59,6 +60,17 @@ namespace JG.FinTechTest.Controllers
             return Task.FromResult<ActionResult<GiftAidResponse>>(Ok(result));
         }
 
+        /// <summary>
+        /// Persist donation data
+        /// </summary>
+        /// <param name="model"><see cref="DonationRequest"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+        /// <returns><see cref="DonationResponse"/></returns>
+        /// TODO: Avoid returning for a post request
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Produces("application/json")]
         public async Task<ActionResult<DonationResponse>> Donate(DonationRequest model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -77,7 +89,7 @@ namespace JG.FinTechTest.Controllers
                                             giftAid);
             var id = await _repository.Save(donation, cancellationToken);
 
-            return new DonationResponse(id, giftAid);
+            return Ok(new DonationResponse(id, giftAid));
         }
 
         private string BuildErrorMessage()

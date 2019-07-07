@@ -130,7 +130,7 @@ namespace JG.FinTechTest.Tests.Controllers
 
             var act = await _sut.Donate(donation, CancellationToken.None);
 
-            var actual = act?.Value as DonationResponse;
+            var actual = ConvertToDonationResponse(act);
             Assert.That(actual?.Id, Is.EqualTo(expectedId));
         }
 
@@ -145,7 +145,22 @@ namespace JG.FinTechTest.Tests.Controllers
             var act = await _sut.Donate(donation, CancellationToken.None);
 
             var expected = donationAmount.GiftAidCalculation(rate).Round2();
-            Assert.That(act?.Value?.GiftAid, Is.EqualTo(expected));
+
+            var actual = ConvertToDonationResponse(act);
+            Assert.That(actual?.GiftAid, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task POST_Should_return_Ok()
+        {
+            const decimal rate = 20;
+            const decimal donationAmount = 100M;
+            var donation = MakeDonationRequest(donationAmount);
+            _taxRateStorage.CurrentRate.Returns(rate);
+
+            var actual = await _sut.Donate(donation, CancellationToken.None);
+
+            Assert.That(actual?.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
@@ -166,16 +181,6 @@ namespace JG.FinTechTest.Tests.Controllers
             await _repository.Received(1).Save(donation, CancellationToken.None);
         }
 
-        private static DonationRequest MakeDonationRequest(decimal donationAmount)
-        {
-            return new DonationRequest
-            {
-                Name = "X",
-                PostCode = "PC",
-                Amount = donationAmount
-            };
-        }
-
         [Test]
         public async Task POST_Should_return_bad_request_when_invalid_state()
         {
@@ -188,12 +193,29 @@ namespace JG.FinTechTest.Tests.Controllers
             Assert.That(actual?.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
+        private static DonationRequest MakeDonationRequest(decimal donationAmount)
+        {
+            return new DonationRequest
+            {
+                Name = "X",
+                PostCode = "PC",
+                Amount = donationAmount
+            };
+        }
+
         private GiftAidRequest MakeGiftAidRequest(decimal donationAmount)
         {
             return new GiftAidRequest()
             {
                 Amount = donationAmount
             };
+        }
+
+        private static DonationResponse ConvertToDonationResponse(ActionResult<DonationResponse> act)
+        {
+            dynamic result = act.Result;
+            var actual = result?.Value as DonationResponse;
+            return actual;
         }
     }
 }
