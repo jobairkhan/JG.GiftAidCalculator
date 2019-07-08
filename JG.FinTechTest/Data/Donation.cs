@@ -14,12 +14,8 @@ namespace JG.FinTechTest.Data
         public decimal Amount { get; private set; }
         public decimal GiftAid { get; private set; }
 
-        private Donation()
+        private Donation(string name, string postCode, decimal amount, decimal giftAid)
         {
-        }
-        private Donation(int id, string name, string postCode, decimal amount, decimal giftAid)
-        {
-            Id = id;
             Name = name;
             PostCode = postCode;
             Amount = amount;
@@ -28,7 +24,7 @@ namespace JG.FinTechTest.Data
 
         public static Donation MakeNew(string name, string postCode, decimal amount, decimal giftAid)
         {
-            return new Donation(0, name, postCode, amount, giftAid);
+            return new Donation(name, postCode, amount, giftAid);
         }
 
         public bool Equals(Donation other)
